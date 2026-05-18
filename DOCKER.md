@@ -17,7 +17,7 @@ Once the setup finishes, update your terminal session groups so you can run Dock
 ```bash
 newgrp docker
 ```
-*(Alternatively, you can log out of your Linux session and log back in to apply this globally).*
+*(must run this before executing command below).*
 
 ### 3. Launch Development Mode
 Launch the integrated development environment (running standard Postgres and the development version of CMS):
