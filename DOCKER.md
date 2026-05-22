@@ -116,7 +116,7 @@ exec bash
 If the Postgres database gets corrupted or you want a 100% fresh environment, stop the container and delete the persistent database folder:
 ```bash
 docker compose -p cms-main -f docker/docker-compose.dev.yml down -v
-rm -rf .dev/postgres-data
+sudo rm -rf .dev/postgres-data
 ```
 
 ### Rebuilding from Scratch
