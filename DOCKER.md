@@ -48,7 +48,6 @@ When you run `./docker/cms-dev.sh`, you are automatically connected to the runni
 Before running CMS for the first time, you must initialize the database schema inside the container:
 ```bash
 # Deletes old schema and configures a clean PostgreSQL schema
-sudo chown -R cmsuser:cmsuser /home/cmsuser/src
 createdb -h devdb -U postgres cmsdb
 cmsInitDB
 
