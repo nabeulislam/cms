@@ -59,7 +59,10 @@ Add your first admin account to access the CMS Admin Web Server:
 # Replace 'myusername' and 'mypassword' with your preferred credentials
 cmsAddAdmin -p mypassword myusername
 ```
-
+### Running multiple terminals
+```
+docker exec -it -u cmsuser <container_id> bash
+```
 ### 3. Running Services
 CMS is distributed, meaning its services run separately. To run a fully local environment for testing, open multiple tabs or run them in the background:
 ```bash
