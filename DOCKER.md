@@ -44,11 +44,13 @@ The Docker configuration consists of the following structure in the repository:
 
 When you run `./docker/cms-dev.sh`, you are automatically connected to the running container bash shell as `cmsuser` in the `/home/cmsuser/src` workspace. 
 
-### 1. Database Initialization
+### 1. Database Initialization and permissions
 Before running CMS for the first time, you must initialize the database schema inside the container:
 ```bash
 # Deletes old schema and configures a clean PostgreSQL schema
+createdb -h devdb -U postgres cmsdb
 cmsInitDB
+sudo chown -R cmsuser:cmsuser /home/cmsuser/src
 ```
 
 ### 2. Adding an Administrator
