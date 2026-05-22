@@ -77,6 +77,12 @@ cmsContestWebServer &
 
 # Start a worker daemon to evaluate submissions
 cmsWorker 0 &
+
+#Start resource
+cmsResourceService -a
+
+# Start logs
+cmsLogService
 ```
 
 ---
