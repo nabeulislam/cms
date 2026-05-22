@@ -9,6 +9,7 @@ This guide provides instructions on how to set up, run, and maintain the Contest
 ### 1. Environment Setup
 To automatically install Docker, Docker Compose, and configure all non-root permissions and BuildKit requirements on your Debian-based system (e.g. Deepin 25, Debian, or Ubuntu), run the master setup script:
 ```bash
+sudo su
 sudo ./setup_docker.sh
 ```
 
