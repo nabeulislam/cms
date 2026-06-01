@@ -64,6 +64,10 @@ cmsAddAdmin -p mypassword myusername
 ```
 docker exec -it -u cmsuser <container_id> bash
 ```
+### Might be needed
+```bash
+sudo chown cmsuser:cmsuser my_folder
+```
 ### 3. Running Services
 CMS is distributed, meaning its services run separately. To run a fully local environment for testing, open multiple tabs or run them in the background:
 ```bash
