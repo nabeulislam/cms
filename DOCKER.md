@@ -64,7 +64,7 @@ cmsAddAdmin -p mypassword myusername
 ```
 docker exec -it -u cmsuser <container_id> bash
 ```
-### Might be needed
+### Might be needed(*if you are using tps before importing task give access to the folder*)
 ```bash
 sudo chown cmsuser:cmsuser my_folder
 ```
