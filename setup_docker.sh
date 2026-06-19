@@ -37,60 +37,36 @@ if [ "$TARGET_USER" = "root" ]; then
     echo -e "${YELLOW}WARNING: Running directly as root. Non-root user permissions will not be mapped.${NC}"
 fi
 
-# 2. Check System Package Manager & OS
-echo -e "\n${BLUE}[1/5] Checking OS and Package Manager...${NC}"
-if [ -f /etc/os-release ]; then
-    . /etc/os-release
-    echo -e "Detected OS: ${GREEN}${NAME} ${VERSION:-}${NC}"
+# 2. Install basic dependencies (curl, git)
+echo -e "\n${BLUE}[1/5] Checking and installing basic dependencies...${NC}"
+if ! command -v curl >/dev/null 2>&1 || ! command -v git >/dev/null 2>&1; then
+    echo -e "Installing curl and git..."
+    if command -v apt-get >/dev/null 2>&1; then
+        apt-get update -y && apt-get install -y curl git ca-certificates
+    elif command -v dnf >/dev/null 2>&1; then
+        dnf install -y curl git ca-certificates
+    elif command -v yum >/dev/null 2>&1; then
+        yum install -y curl git ca-certificates
+    elif command -v pacman >/dev/null 2>&1; then
+        pacman -Sy --noconfirm curl git ca-certificates
+    elif command -v zypper >/dev/null 2>&1; then
+        zypper install -y curl git ca-certificates
+    elif command -v apk >/dev/null 2>&1; then
+        apk add --no-cache curl git ca-certificates
+    else
+        echo -e "${RED}ERROR: Could not find a supported package manager to install curl and git.${NC}"
+        echo -e "Please install them manually and re-run this script."
+        exit 1
+    fi
 else
-    echo -e "${YELLOW}Could not read /etc/os-release. Assuming Debian-compatible system...${NC}"
+    echo -e "${GREEN}Dependencies (curl, git) are already installed.${NC}"
 fi
 
-# Map Deepin or other derivative codenames to Debian Bookworm (stable)
-CODENAME="${VERSION_CODENAME:-}"
-OS_ID="${ID:-}"
-
-if [ "${OS_ID}" = "deepin" ] || [ "${CODENAME}" = "crimson" ] || [ "${CODENAME}" = "beige" ]; then
-    echo -e "${YELLOW}Non-standard Debian/Ubuntu derivative detected (Deepin Crimson/Beige).${NC}"
-    echo -e "Mapping codename '${CODENAME}' to upstream Debian stable ${GREEN}bookworm${NC} to prevent 404 errors."
-    CODENAME="bookworm"
-    OS_ID="debian"
-fi
-
-# Fallback defaults if codename/OS is missing or unsupported
-if [ -z "${CODENAME}" ]; then
-    CODENAME="bookworm"
-fi
-if [ -z "${OS_ID}" ] || [ "${OS_ID}" = "deepin" ]; then
-    OS_ID="debian"
-fi
-
-# Clean up any bad configurations left by previous failed installation attempts
-# This MUST happen before running apt-get update to avoid 404 blockages.
-# We clear both traditional (.list) and modern DEB822 (.sources) formats.
-rm -f /etc/apt/sources.list.d/docker.list /etc/apt/sources.list.d/docker.sources
-
-# Install general dependencies
-echo -e "Installing base system dependencies (curl, git, apt-transport-https)..."
-apt-get update -y
-apt-get install -y curl git apt-transport-https ca-certificates gnupg lsb-release
-
-# 3. Install/Update Docker and Docker Compose using manual mapped repository
-echo -e "\n${BLUE}[2/5] Setting up official Docker repository & installing Docker Suite...${NC}"
-
-echo -e "Setting up GPG keyring for Docker..."
-mkdir -p /etc/apt/keyrings
-curl -fsSL "https://download.docker.com/linux/${OS_ID}/gpg" -o /etc/apt/keyrings/docker.asc
-chmod a+r /etc/apt/keyrings/docker.asc
-
-echo -e "Writing Docker apt repository list with codename: ${CODENAME}..."
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/${OS_ID} \
-  ${CODENAME} stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
-  
-echo -e "Updating package index and installing modern Docker CE and Compose..."
-apt-get update -y
-apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+# 3. Install/Update Docker using official convenience script
+echo -e "\n${BLUE}[2/5] Installing Docker Suite via official convenience script...${NC}"
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh
+rm -f get-docker.sh
 
 # 4. Enable Docker BuildKit globally (Fixes Dockerfile heredoc <<EOF syntax errors)
 echo -e "\n${BLUE}[3/5] Configuring Docker Daemon (BuildKit & Features)...${NC}"
